@@ -2,10 +2,37 @@
 'use strict';
 
 var Fs = require("fs");
+var Caml_array = require("rescript/lib/js/caml_array.js");
+var Caml_int32 = require("rescript/lib/js/caml_int32.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day3.sample.txt", "utf8");
 
-console.log(input);
+var roadMap = input.split("\n");
+
+var numberOfTree = {
+  contents: 0
+};
+
+function getPosition(x, y) {
+  var end = roadMap.length - 1 | 0;
+  if (y <= end) {
+    getPosition(x + 3 | 0, y + 1 | 0);
+    if (Caml_array.get(roadMap, y).charAt(Caml_int32.mod_(x, Caml_array.get(roadMap, y).length)) === "#") {
+      numberOfTree.contents = numberOfTree.contents + 1 | 0;
+      return ;
+    } else {
+      return ;
+    }
+  }
+  
+}
+
+getPosition(0, 0);
+
+console.log(numberOfTree);
 
 exports.input = input;
+exports.roadMap = roadMap;
+exports.numberOfTree = numberOfTree;
+exports.getPosition = getPosition;
 /* input Not a pure module */
