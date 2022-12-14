@@ -9,30 +9,28 @@ var input = Fs.readFileSync("input/Week1/Year2020Day3.sample.txt", "utf8");
 
 var roadMap = input.split("\n");
 
-var numberOfTree = {
-  contents: 0
-};
-
-function getPosition(x, y) {
+function getNumberOfTree(roadMap, right, down) {
   var end = roadMap.length - 1 | 0;
-  if (y <= end) {
-    getPosition(x + 3 | 0, y + 1 | 0);
-    if (Caml_array.get(roadMap, y).charAt(Caml_int32.mod_(x, Caml_array.get(roadMap, y).length)) === "#") {
-      numberOfTree.contents = numberOfTree.contents + 1 | 0;
-      return ;
-    } else {
+  var path = {
+    contents: []
+  };
+  var getPosition = function (x, y) {
+    if (y > end) {
       return ;
     }
-  }
-  
+    var newRight = Caml_int32.mod_(x + right | 0, Caml_array.get(roadMap, y).length);
+    getPosition(newRight, y + down | 0);
+    path.contents.push(Caml_array.get(roadMap, y).charAt(newRight));
+  };
+  getPosition(0, down);
+  return path.contents.filter(function (item) {
+              return item === "#";
+            }).length;
 }
 
-getPosition(0, 0);
-
-console.log(numberOfTree);
+console.log(getNumberOfTree(roadMap, 3, 1));
 
 exports.input = input;
 exports.roadMap = roadMap;
-exports.numberOfTree = numberOfTree;
-exports.getPosition = getPosition;
+exports.getNumberOfTree = getNumberOfTree;
 /* input Not a pure module */
