@@ -22,7 +22,7 @@ let input = Node.Fs.readFileAsUtf8Sync("input/Week1/Year2020Day3.sample.txt")
 
 let roadMap = Js.String2.split(input, "\n")
 
-let getNumberOfTree = (roadMap, right, down) => {
+let getNumberOfTree = (roadMap, right: int, down: int) => {
   let end = roadMap->Js.Array2.length - 1
 
   let path = ref([])
@@ -38,4 +38,12 @@ let getNumberOfTree = (roadMap, right, down) => {
   path.contents->Js.Array2.filter(item => item === "#")->Js.Array2.length
 }
 
-getNumberOfTree(roadMap, 3, 1)->Js.log
+let resultList = [
+  getNumberOfTree(roadMap, 1, 1),
+  getNumberOfTree(roadMap, 3, 1),
+  getNumberOfTree(roadMap, 5, 1),
+  getNumberOfTree(roadMap, 7, 1),
+  getNumberOfTree(roadMap, 1, 2),
+]
+
+Belt.Array.reduce(resultList, 1.0, (acc, currentVal) => acc *. Js.Int.toFloat(currentVal))->Js.log

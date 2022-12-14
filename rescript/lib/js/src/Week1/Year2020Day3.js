@@ -2,6 +2,7 @@
 'use strict';
 
 var Fs = require("fs");
+var Belt_Array = require("rescript/lib/js/belt_Array.js");
 var Caml_array = require("rescript/lib/js/caml_array.js");
 var Caml_int32 = require("rescript/lib/js/caml_int32.js");
 
@@ -28,9 +29,20 @@ function getNumberOfTree(roadMap, right, down) {
             }).length;
 }
 
-console.log(getNumberOfTree(roadMap, 3, 1));
+var resultList = [
+  getNumberOfTree(roadMap, 1, 1),
+  getNumberOfTree(roadMap, 3, 1),
+  getNumberOfTree(roadMap, 5, 1),
+  getNumberOfTree(roadMap, 7, 1),
+  getNumberOfTree(roadMap, 1, 2)
+];
+
+console.log(Belt_Array.reduce(resultList, 1.0, (function (acc, currentVal) {
+            return acc * currentVal;
+          })));
 
 exports.input = input;
 exports.roadMap = roadMap;
 exports.getNumberOfTree = getNumberOfTree;
+exports.resultList = resultList;
 /* input Not a pure module */
