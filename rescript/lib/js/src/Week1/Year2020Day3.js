@@ -10,7 +10,7 @@ var input = Fs.readFileSync("input/Week1/Year2020Day3.sample.txt", "utf8");
 
 var roadMap = input.split("\n");
 
-function getNumberOfTree(roadMap, right, down) {
+function getNumberOfTree(roadMap, slope) {
   var end = roadMap.length - 1 | 0;
   var path = {
     contents: []
@@ -19,22 +19,37 @@ function getNumberOfTree(roadMap, right, down) {
     if (y > end) {
       return ;
     }
-    var newRight = Caml_int32.mod_(x + right | 0, Caml_array.get(roadMap, y).length);
-    getPosition(newRight, y + down | 0);
+    var newRight = Caml_int32.mod_(x + slope.right | 0, Caml_array.get(roadMap, y).length);
+    getPosition(newRight, y + slope.down | 0);
     path.contents.push(Caml_array.get(roadMap, y).charAt(newRight));
   };
-  getPosition(0, down);
+  getPosition(0, slope.down);
   return path.contents.filter(function (item) {
               return item === "#";
             }).length;
 }
 
 var resultList = [
-  getNumberOfTree(roadMap, 1, 1),
-  getNumberOfTree(roadMap, 3, 1),
-  getNumberOfTree(roadMap, 5, 1),
-  getNumberOfTree(roadMap, 7, 1),
-  getNumberOfTree(roadMap, 1, 2)
+  getNumberOfTree(roadMap, {
+        right: 1,
+        down: 1
+      }),
+  getNumberOfTree(roadMap, {
+        right: 3,
+        down: 1
+      }),
+  getNumberOfTree(roadMap, {
+        right: 5,
+        down: 1
+      }),
+  getNumberOfTree(roadMap, {
+        right: 7,
+        down: 1
+      }),
+  getNumberOfTree(roadMap, {
+        right: 1,
+        down: 2
+      })
 ];
 
 console.log(Belt_Array.reduce(resultList, 1.0, (function (acc, currentVal) {

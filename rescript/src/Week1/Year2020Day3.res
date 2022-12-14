@@ -22,28 +22,33 @@ let input = Node.Fs.readFileAsUtf8Sync("input/Week1/Year2020Day3.sample.txt")
 
 let roadMap = Js.String2.split(input, "\n")
 
-let getNumberOfTree = (roadMap, right: int, down: int) => {
+type slopeRecord = {
+  right: int,
+  down: int,
+}
+
+let getNumberOfTree = (roadMap, slope: slopeRecord) => {
   let end = roadMap->Js.Array2.length - 1
 
   let path = ref([])
 
   let rec getPosition = (x: int, y: int) => {
     if y <= end {
-      let newRight = mod(x + right, roadMap[y]->Js.String2.length)
-      getPosition(newRight, y + down)
+      let newRight = mod(x + slope.right, roadMap[y]->Js.String2.length)
+      getPosition(newRight, y + slope.down)
       path.contents->Belt.Array.push(Js.String2.charAt(roadMap[y], newRight))
     }
   }
-  getPosition(0, down)
+  getPosition(0, slope.down)
   path.contents->Js.Array2.filter(item => item === "#")->Js.Array2.length
 }
 
 let resultList = [
-  getNumberOfTree(roadMap, 1, 1),
-  getNumberOfTree(roadMap, 3, 1),
-  getNumberOfTree(roadMap, 5, 1),
-  getNumberOfTree(roadMap, 7, 1),
-  getNumberOfTree(roadMap, 1, 2),
+  getNumberOfTree(roadMap, {right: 1, down: 1}),
+  getNumberOfTree(roadMap, {right: 3, down: 1}),
+  getNumberOfTree(roadMap, {right: 5, down: 1}),
+  getNumberOfTree(roadMap, {right: 7, down: 1}),
+  getNumberOfTree(roadMap, {right: 1, down: 2}),
 ]
 
 Belt.Array.reduce(resultList, 1.0, (acc, currentVal) => acc *. Js.Int.toFloat(currentVal))->Js.log
