@@ -30,21 +30,19 @@ type slopeRecord = {
 let getNumberOfTree = (roadMap, slope: slopeRecord) => {
   let end = roadMap->Js.Array2.length - 1
 
-  let path = ref([])
-
-  let rec getPosition = (x: int, y: int) => {
+  let rec getPosition = (path, x: int, y: int) => {
     switch y <= end {
     | true => {
         let newRight = mod(x + slope.right, roadMap[y]->Js.String2.length)
-        getPosition(newRight, y + slope.down)
-        path.contents->Belt.Array.push(Js.String2.charAt(roadMap[y], newRight))
+        let newPath = path->Belt.Array.concat([Js.String2.charAt(roadMap[y], newRight)])
+        getPosition(newPath, newRight, y + slope.down)
       }
 
-    | false => ()
+    | false => path
     }
   }
-  getPosition(0, slope.down)
-  path.contents->Js.Array2.filter(item => item === "#")->Js.Array2.length
+
+  getPosition([], 0, slope.down)->Js.Array2.filter(item => item === "#")->Js.Array2.length
 }
 
 let resultList = [

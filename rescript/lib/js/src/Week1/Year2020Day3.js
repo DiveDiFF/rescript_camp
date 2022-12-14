@@ -12,19 +12,23 @@ var roadMap = input.split("\n");
 
 function getNumberOfTree(roadMap, slope) {
   var end = roadMap.length - 1 | 0;
-  var path = {
-    contents: []
+  var getPosition = function (_path, _x, _y) {
+    while(true) {
+      var y = _y;
+      var x = _x;
+      var path = _path;
+      if (y > end) {
+        return path;
+      }
+      var newRight = Caml_int32.mod_(x + slope.right | 0, Caml_array.get(roadMap, y).length);
+      var newPath = Belt_Array.concat(path, [Caml_array.get(roadMap, y).charAt(newRight)]);
+      _y = y + slope.down | 0;
+      _x = newRight;
+      _path = newPath;
+      continue ;
+    };
   };
-  var getPosition = function (x, y) {
-    if (y > end) {
-      return ;
-    }
-    var newRight = Caml_int32.mod_(x + slope.right | 0, Caml_array.get(roadMap, y).length);
-    getPosition(newRight, y + slope.down | 0);
-    path.contents.push(Caml_array.get(roadMap, y).charAt(newRight));
-  };
-  getPosition(0, slope.down);
-  return path.contents.filter(function (item) {
+  return getPosition([], 0, slope.down).filter(function (item) {
               return item === "#";
             }).length;
 }
