@@ -33,10 +33,14 @@ let getNumberOfTree = (roadMap, slope: slopeRecord) => {
   let path = ref([])
 
   let rec getPosition = (x: int, y: int) => {
-    if y <= end {
-      let newRight = mod(x + slope.right, roadMap[y]->Js.String2.length)
-      getPosition(newRight, y + slope.down)
-      path.contents->Belt.Array.push(Js.String2.charAt(roadMap[y], newRight))
+    switch y <= end {
+    | true => {
+        let newRight = mod(x + slope.right, roadMap[y]->Js.String2.length)
+        getPosition(newRight, y + slope.down)
+        path.contents->Belt.Array.push(Js.String2.charAt(roadMap[y], newRight))
+      }
+
+    | false => ()
     }
   }
   getPosition(0, slope.down)
