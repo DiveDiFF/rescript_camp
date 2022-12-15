@@ -2,62 +2,76 @@
 'use strict';
 
 var Fs = require("fs");
+var Js_exn = require("rescript/lib/js/js_exn.js");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
-var Caml_array = require("rescript/lib/js/caml_array.js");
+var Caml_option = require("rescript/lib/js/caml_option.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day5.sample.txt", "utf8");
 
 var inputList = input.split("\n");
 
-function getRowsPosition(list, $$char) {
-  if ($$char === "F") {
-    return [
-            Belt_Array.keepWithIndex(Caml_array.get(list, 0), (function (param, index) {
-                    return index < (Caml_array.get(list, 0).length >> 1);
-                  })),
-            Caml_array.get(list, 1)
-          ];
-  } else if ($$char === "B") {
-    return [
-            Belt_Array.keepWithIndex(Caml_array.get(list, 0), (function (param, index) {
-                    return index >= (Caml_array.get(list, 0).length >> 1);
-                  })),
-            Caml_array.get(list, 1)
-          ];
-  } else if ($$char === "L") {
-    return [
-            Caml_array.get(list, 0),
-            Belt_Array.keepWithIndex(Caml_array.get(list, 1), (function (param, index) {
-                    return index < (Caml_array.get(list, 1).length >> 1);
-                  }))
-          ];
-  } else if ($$char === "R") {
-    return [
-            Caml_array.get(list, 0),
-            Belt_Array.keepWithIndex(Caml_array.get(list, 1), (function (param, index) {
-                    return index >= (Caml_array.get(list, 1).length >> 1);
-                  }))
-          ];
-  } else {
-    return list;
+function getSeatId(seats, maxId) {
+  var match = Belt_Array.reduce(seats, [
+        0,
+        maxId
+      ], (function (param, seat) {
+          var max = param[1];
+          var min = param[0];
+          if (seat) {
+            return [
+                    min,
+                    (min + max | 0) / 2 | 0
+                  ];
+          } else {
+            return [
+                    ((min + max | 0) / 2 | 0) + 1 | 0,
+                    max
+                  ];
+          }
+        }));
+  var max = match[1];
+  if (match[0] !== max) {
+    Js_exn.raiseError("min, max is not equal");
   }
+  return max;
 }
 
-console.log(Belt_Array.map(inputList, (function (passcode) {
-            return Belt_Array.reduceWithIndex(passcode.split(""), [
-                        Belt_Array.range(0, 127),
-                        Belt_Array.range(0, 7)
-                      ], (function (acc, value, index) {
-                          console.log([
-                                acc,
-                                value,
-                                index
-                              ]);
-                          return getRowsPosition(acc, value);
-                        }));
-          })));
+function parser(seat) {
+  var verticalId = getSeatId(Belt_Array.map(seat.substring(0, 7).split(""), (function ($$char) {
+              switch ($$char) {
+                case "B" :
+                    return /* Up */0;
+                case "F" :
+                    return /* Down */1;
+                default:
+                  return Js_exn.raiseError("" + $$char + " is not valid character");
+              }
+            })), 127);
+  var horizontalId = getSeatId(Belt_Array.map(seat.substring(7, 10).split(""), (function ($$char) {
+              switch ($$char) {
+                case "L" :
+                    return /* Down */1;
+                case "R" :
+                    return /* Up */0;
+                default:
+                  return Js_exn.raiseError("" + $$char + " is not valid character");
+              }
+            })), 7);
+  return (verticalId << 3) + horizontalId | 0;
+}
+
+console.log(Caml_option.undefined_to_opt(Belt_Array.map(inputList, parser).sort(function (a, b) {
+                return b - a | 0;
+              }).shift()));
+
+var maxSeatVertical = 127;
+
+var maxSeatHorizontal = 7;
 
 exports.input = input;
 exports.inputList = inputList;
-exports.getRowsPosition = getRowsPosition;
+exports.maxSeatVertical = maxSeatVertical;
+exports.maxSeatHorizontal = maxSeatHorizontal;
+exports.getSeatId = getSeatId;
+exports.parser = parser;
 /* input Not a pure module */
