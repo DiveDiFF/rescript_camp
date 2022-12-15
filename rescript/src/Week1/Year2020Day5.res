@@ -51,12 +51,32 @@ let parser = seat => {
   8 * verticalId + horizontalId
 }
 
-inputList
-->Belt.Array.map(item => {
-  parser(item)
-})
+let resultList =
+  inputList
+  ->Belt.Array.map(item => {
+    parser(item)
+  })
+  ->Js.Array2.sortInPlaceWith((a, b) => b - a)
+
+// part1 answer
+resultList->Belt.Array.get(0)->Js.log
+
+// part2 answer
+Belt.Array.range(
+  0,
+  switch resultList->Belt.Array.get(0) {
+  | None => -1
+  | Some(v) => v
+  },
+)
 ->Js.Array2.sortInPlaceWith((a, b) => b - a)
-->Js.Array2.shift
+->Js.Array2.findi((x, i) => {
+  if i < Belt.Array.length(resultList) - 1 {
+    x !== resultList[i]
+  } else {
+    false
+  }
+})
 ->Js.log
 
 // // !take1

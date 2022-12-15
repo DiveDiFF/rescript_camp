@@ -4,6 +4,7 @@
 var Fs = require("fs");
 var Js_exn = require("rescript/lib/js/js_exn.js");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
+var Caml_array = require("rescript/lib/js/caml_array.js");
 var Caml_option = require("rescript/lib/js/caml_option.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day5.sample.txt", "utf8");
@@ -60,9 +61,23 @@ function parser(seat) {
   return (verticalId << 3) + horizontalId | 0;
 }
 
-console.log(Caml_option.undefined_to_opt(Belt_Array.map(inputList, parser).sort(function (a, b) {
+var resultList = Belt_Array.map(inputList, parser).sort(function (a, b) {
+      return b - a | 0;
+    });
+
+console.log(Belt_Array.get(resultList, 0));
+
+var v = Belt_Array.get(resultList, 0);
+
+console.log(Caml_option.undefined_to_opt(Belt_Array.range(0, v !== undefined ? v : -1).sort(function (a, b) {
                 return b - a | 0;
-              }).shift()));
+              }).find(function (x, i) {
+              if (i < (resultList.length - 1 | 0)) {
+                return x !== Caml_array.get(resultList, i);
+              } else {
+                return false;
+              }
+            })));
 
 var maxSeatVertical = 127;
 
@@ -74,4 +89,5 @@ exports.maxSeatVertical = maxSeatVertical;
 exports.maxSeatHorizontal = maxSeatHorizontal;
 exports.getSeatId = getSeatId;
 exports.parser = parser;
+exports.resultList = resultList;
 /* input Not a pure module */
