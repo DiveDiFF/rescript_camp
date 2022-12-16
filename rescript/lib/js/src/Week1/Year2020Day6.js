@@ -3,24 +3,51 @@
 
 var Fs = require("fs");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
+var Belt_MapString = require("rescript/lib/js/belt_MapString.js");
 var Belt_SetString = require("rescript/lib/js/belt_SetString.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day6.sample.txt", "utf8");
 
-var inputList = Belt_Array.map(Belt_Array.map(Belt_Array.map(input.split("\n\n"), (function (group) {
-                return group.split("\n");
-              })), (function (group) {
-            return Belt_Array.map(group, (function (answers) {
-                          return answers.split("");
-                        }));
-          })), Belt_Array.concatMany);
+var inputList = Belt_Array.map(Belt_Array.map(input.split("\n\n"), (function (group) {
+            return group.split("\n");
+          })), (function (group) {
+        return Belt_Array.map(group, (function (answers) {
+                      return answers.split("");
+                    }));
+      }));
 
-console.log(Belt_Array.reduce(Belt_Array.map(inputList, (function (group) {
+function getSumAnswers(answerSheetGroup) {
+  return Belt_Array.reduce(answerSheetGroup, 0, (function (acc, value) {
+                return acc + value.length | 0;
+              }));
+}
+
+console.log(getSumAnswers(Belt_Array.map(Belt_Array.map(inputList, Belt_Array.concatMany), (function (group) {
                 return Belt_SetString.toArray(Belt_SetString.fromArray(group));
-              })), 0, (function (acc, value) {
-            return acc + value.length | 0;
-          })));
+              }))));
+
+function getEveryoneAnsweredYes(answerSheet, entireCount) {
+  return Belt_MapString.keysToArray(Belt_MapString.keep(Belt_Array.reduce(answerSheet, undefined, (function (acc, value) {
+                        var v = Belt_MapString.get(acc, value);
+                        return Belt_MapString.set(acc, value, (
+                                    v !== undefined ? v : 0
+                                  ) + 1 | 0);
+                      })), (function (param, value) {
+                    return value === entireCount;
+                  })));
+}
+
+console.log(getSumAnswers(Belt_Array.map(Belt_Array.map(inputList, (function (group) {
+                    return [
+                            group.length,
+                            Belt_Array.concatMany(group)
+                          ];
+                  })), (function (param) {
+                return getEveryoneAnsweredYes(param[1], param[0]);
+              }))));
 
 exports.input = input;
 exports.inputList = inputList;
+exports.getSumAnswers = getSumAnswers;
+exports.getEveryoneAnsweredYes = getEveryoneAnsweredYes;
 /* input Not a pure module */
