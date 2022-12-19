@@ -35,6 +35,25 @@ console.log(Belt_Array.keep(inputList, (function (item) {
             }
           })).length);
 
+console.log(Belt_Array.keep(inputList, (function (item) {
+            var condition = item[0];
+            var password = item[2];
+            var $$char = item[1];
+            var firstMatch = password.charAt(condition[0] - 1 | 0) === $$char;
+            var secondMatch = password.charAt(condition[1] - 1 | 0) === $$char;
+            if (firstMatch) {
+              if (secondMatch) {
+                return false;
+              } else {
+                return true;
+              }
+            } else if (secondMatch) {
+              return true;
+            } else {
+              return false;
+            }
+          })).length);
+
 exports.input = input;
 exports.inputList = inputList;
 /* input Not a pure module */
