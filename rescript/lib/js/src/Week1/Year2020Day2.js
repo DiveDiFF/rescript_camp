@@ -2,45 +2,61 @@
 'use strict';
 
 var Fs = require("fs");
+var Js_exn = require("rescript/lib/js/js_exn.js");
 var Belt_Int = require("rescript/lib/js/belt_Int.js");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
-var Caml_array = require("rescript/lib/js/caml_array.js");
-var Belt_Option = require("rescript/lib/js/belt_Option.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day2.sample.txt", "utf8");
 
-var inputList = Belt_Array.map(Belt_Array.map(input.split("\n"), (function (item) {
-            return item.split(" ");
-          })), (function (item) {
-        var conditionArray = Belt_Array.map(Caml_array.get(item, 0).split("-"), (function (value) {
-                return Belt_Option.getWithDefault(Belt_Int.fromString(value), 0);
-              }));
-        return [
-                [
-                  Caml_array.get(conditionArray, 0),
-                  Caml_array.get(conditionArray, 1)
-                ],
-                Caml_array.get(item, 1).charAt(0),
-                Caml_array.get(item, 2)
-              ];
+var inputList = Belt_Array.map(input.split("\n"), (function (item) {
+        var match = item.split(" ");
+        if (match.length !== 3) {
+          return Js_exn.raiseError("can not match length of this array");
+        }
+        var period = match[0];
+        var pattern = match[1];
+        var password = match[2];
+        var match$1 = Belt_Array.map(period.split("-"), Belt_Int.fromString);
+        if (match$1.length !== 2) {
+          return Js_exn.raiseError("can not find first, second int in period");
+        }
+        var first = match$1[0];
+        if (first === undefined) {
+          return Js_exn.raiseError("can not find first, second int in period");
+        }
+        var second = match$1[1];
+        if (second !== undefined) {
+          return [
+                  [
+                    first,
+                    second
+                  ],
+                  pattern.charAt(0),
+                  password
+                ];
+        } else {
+          return Js_exn.raiseError("can not find first, second int in period");
+        }
       }));
 
-console.log(Belt_Array.keep(inputList, (function (item) {
-            var condition = item[0];
-            var numberOfChar = item[2].split(item[1]).length - 1 | 0;
-            if (condition[0] <= numberOfChar) {
-              return condition[1] >= numberOfChar;
+console.log(inputList);
+
+console.log(Belt_Array.keep(inputList, (function (param) {
+            var match = param[0];
+            var numberOfChar = param[2].split(param[1]).length - 1 | 0;
+            if (match[0] <= numberOfChar) {
+              return match[1] >= numberOfChar;
             } else {
               return false;
             }
           })).length);
 
-console.log(Belt_Array.keep(inputList, (function (item) {
-            var condition = item[0];
-            var password = item[2];
-            var $$char = item[1];
-            var firstMatch = password.charAt(condition[0] - 1 | 0) === $$char;
-            var secondMatch = password.charAt(condition[1] - 1 | 0) === $$char;
+console.log(Belt_Array.keep(inputList, (function (param) {
+            var password = param[2];
+            var pattern = param[1];
+            var match = param[0];
+            var firstMatch = password.charAt(match[0] - 1 | 0) === pattern;
+            var secondMatch = password.charAt(match[1] - 1 | 0) === pattern;
             if (firstMatch) {
               if (secondMatch) {
                 return false;
