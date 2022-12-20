@@ -2,27 +2,26 @@
 'use strict';
 
 var Fs = require("fs");
-var Js_exn = require("rescript/lib/js/js_exn.js");
 var Belt_Int = require("rescript/lib/js/belt_Int.js");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day2.sample.txt", "utf8");
 
-var inputList = Belt_Array.map(input.split("\n"), (function (item) {
+var inputList = Belt_Array.keepMap(input.split("\n"), (function (item) {
         var match = item.split(" ");
         if (match.length !== 3) {
-          return Js_exn.raiseError("can not match length of this array");
+          return ;
         }
         var period = match[0];
         var pattern = match[1];
         var password = match[2];
         var match$1 = Belt_Array.map(period.split("-"), Belt_Int.fromString);
         if (match$1.length !== 2) {
-          return Js_exn.raiseError("can not find first, second int in period");
+          return ;
         }
         var first = match$1[0];
         if (first === undefined) {
-          return Js_exn.raiseError("can not find first, second int in period");
+          return ;
         }
         var second = match$1[1];
         if (second !== undefined) {
@@ -34,9 +33,8 @@ var inputList = Belt_Array.map(input.split("\n"), (function (item) {
                   pattern.charAt(0),
                   password
                 ];
-        } else {
-          return Js_exn.raiseError("can not find first, second int in period");
         }
+        
       }));
 
 console.log(inputList);

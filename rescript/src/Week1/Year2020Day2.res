@@ -15,14 +15,15 @@ let input = Node.Fs.readFileAsUtf8Sync("input/Week1/Year2020Day2.sample.txt")
 let inputList =
   input
   ->Js.String2.split("\n")
-  ->Belt.Array.map(item => {
+  ->Belt.Array.keepMap(item => {
     switch item->Js.String2.split(" ") {
     | [period, pattern, password] =>
       switch period->Js.String2.split("-")->Belt.Array.map(Belt.Int.fromString) {
-      | [Some(first), Some(second)] => ((first, second), pattern->Js.String2.charAt(0), password)
-      | _ => Js.Exn.raiseError(`can not find first, second int in period`)
+      | [Some(first), Some(second)] =>
+        Some((first, second), pattern->Js.String2.charAt(0), password)
+      | _ => None
       }
-    | _ => Js.Exn.raiseError(`can not match length of this array`)
+    | _ => None
     }
   })
 
