@@ -3,7 +3,9 @@
 
 var Fs = require("fs");
 var Js_exn = require("rescript/lib/js/js_exn.js");
+var Belt_Int = require("rescript/lib/js/belt_Int.js");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
+var Caml_option = require("rescript/lib/js/caml_option.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day4.sample.txt", "utf8");
 
@@ -20,61 +22,106 @@ var inputList = Belt_Array.map(input.split("\n\n"), (function (passport) {
                       var tmp;
                       switch (key) {
                         case "byr" :
-                            tmp = /* Byr */0;
+                            var v = Belt_Int.fromString(value);
+                            tmp = {
+                              byr: Caml_option.some(v !== undefined && v >= 1920 && v <= 2002 ? v : undefined)
+                            };
                             break;
                         case "cid" :
-                            tmp = /* Cid */7;
+                            tmp = {
+                              cid: value
+                            };
                             break;
                         case "ecl" :
-                            tmp = /* Ecl */5;
+                            var tmp$1;
+                            switch (value) {
+                              case "amb" :
+                                  tmp$1 = /* Amb */0;
+                                  break;
+                              case "blu" :
+                                  tmp$1 = /* Blu */1;
+                                  break;
+                              case "brn" :
+                                  tmp$1 = /* Brn */2;
+                                  break;
+                              case "grn" :
+                                  tmp$1 = /* Grn */4;
+                                  break;
+                              case "gry" :
+                                  tmp$1 = /* Gry */3;
+                                  break;
+                              case "hzl" :
+                                  tmp$1 = /* Hzl */5;
+                                  break;
+                              case "oth" :
+                                  tmp$1 = /* Oth */6;
+                                  break;
+                              default:
+                                tmp$1 = undefined;
+                            }
+                            tmp = {
+                              ecl: Caml_option.some(tmp$1)
+                            };
                             break;
                         case "eyr" :
-                            tmp = /* Eyr */2;
+                            var v$1 = Belt_Int.fromString(value);
+                            tmp = {
+                              eyr: Caml_option.some(v$1 !== undefined && v$1 >= 2020 && v$1 <= 2030 ? v$1 : undefined)
+                            };
                             break;
                         case "hcl" :
-                            tmp = /* Hcl */4;
+                            tmp = {
+                              hcl: Caml_option.some(/^\#[\d|a-f$]{6}/.test(value) ? value : undefined)
+                            };
                             break;
                         case "hgt" :
-                            tmp = /* Hgt */3;
+                            var match$1 = value.slice(-2);
+                            var tmp$2;
+                            switch (match$1) {
+                              case "cm" :
+                                  var v$2 = Belt_Int.fromString(value.substring(0, value.indexOf("c") + 1 | 0));
+                                  tmp$2 = [
+                                    v$2 !== undefined && v$2 >= 150 && v$2 <= 193 ? v$2 : undefined,
+                                    /* Cm */0
+                                  ];
+                                  break;
+                              case "in" :
+                                  var v$3 = Belt_Int.fromString(value.substring(0, value.indexOf("i") + 1 | 0));
+                                  tmp$2 = [
+                                    v$3 !== undefined && v$3 >= 59 && v$3 <= 76 ? v$3 : undefined,
+                                    /* In */1
+                                  ];
+                                  break;
+                              default:
+                                tmp$2 = [
+                                  undefined,
+                                  undefined
+                                ];
+                            }
+                            tmp = {
+                              hgt: tmp$2
+                            };
                             break;
                         case "iyr" :
-                            tmp = /* Iyr */1;
+                            var v$4 = Belt_Int.fromString(value);
+                            tmp = {
+                              iyr: Caml_option.some(v$4 !== undefined && v$4 >= 2010 && v$4 <= 2020 ? v$4 : undefined)
+                            };
                             break;
                         case "pid" :
-                            tmp = /* Pid */6;
+                            tmp = {
+                              pid: Caml_option.some(/[0-9]{9}/g.test(value) ? value : undefined)
+                            };
                             break;
                         default:
-                          tmp = Js_exn.raiseError("error");
+                          tmp = Js_exn.raiseError("this is not valid key");
                       }
-                      return [
-                              tmp,
-                              value
-                            ];
+                      return tmp;
                     }));
       }));
 
-var validKeys = [
-  /* Byr */0,
-  /* Iyr */1,
-  /* Eyr */2,
-  /* Hgt */3,
-  /* Hcl */4,
-  /* Ecl */5,
-  /* Pid */6
-];
-
-console.log(Belt_Array.keep(Belt_Array.map(inputList, (function (item) {
-                console.log(item);
-                return Belt_Array.map(item, (function (param) {
-                              return param[0];
-                            }));
-              })), (function (keyArray) {
-            return Belt_Array.every(validKeys, (function (item) {
-                          return keyArray.includes(item);
-                        }));
-          })).length);
+console.log(inputList);
 
 exports.input = input;
 exports.inputList = inputList;
-exports.validKeys = validKeys;
 /* input Not a pure module */
