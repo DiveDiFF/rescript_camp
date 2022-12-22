@@ -2,126 +2,64 @@
 'use strict';
 
 var Fs = require("fs");
-var Js_exn = require("rescript/lib/js/js_exn.js");
+var Js_dict = require("rescript/lib/js/js_dict.js");
 var Belt_Int = require("rescript/lib/js/belt_Int.js");
 var Belt_Array = require("rescript/lib/js/belt_Array.js");
-var Caml_option = require("rescript/lib/js/caml_option.js");
+var Belt_Option = require("rescript/lib/js/belt_Option.js");
 
 var input = Fs.readFileSync("input/Week1/Year2020Day4.sample.txt", "utf8");
 
 var inputList = Belt_Array.map(input.split("\n\n"), (function (passport) {
-        return Belt_Array.keepMap(Belt_Array.concatMany(Belt_Array.map(passport.split("\n"), (function (item) {
-                              return item.split(" ");
-                            }))), (function (item) {
-                      var match = item.split(":");
-                      if (match.length !== 2) {
-                        return ;
-                      }
-                      var key = match[0];
-                      var value = match[1];
-                      var tmp;
-                      switch (key) {
-                        case "byr" :
-                            var v = Belt_Int.fromString(value);
-                            tmp = {
-                              byr: Caml_option.some(v !== undefined && v >= 1920 && v <= 2002 ? v : undefined)
-                            };
-                            break;
-                        case "cid" :
-                            tmp = {
-                              cid: value
-                            };
-                            break;
-                        case "ecl" :
-                            var tmp$1;
-                            switch (value) {
-                              case "amb" :
-                                  tmp$1 = /* Amb */0;
-                                  break;
-                              case "blu" :
-                                  tmp$1 = /* Blu */1;
-                                  break;
-                              case "brn" :
-                                  tmp$1 = /* Brn */2;
-                                  break;
-                              case "grn" :
-                                  tmp$1 = /* Grn */4;
-                                  break;
-                              case "gry" :
-                                  tmp$1 = /* Gry */3;
-                                  break;
-                              case "hzl" :
-                                  tmp$1 = /* Hzl */5;
-                                  break;
-                              case "oth" :
-                                  tmp$1 = /* Oth */6;
-                                  break;
-                              default:
-                                tmp$1 = undefined;
-                            }
-                            tmp = {
-                              ecl: Caml_option.some(tmp$1)
-                            };
-                            break;
-                        case "eyr" :
-                            var v$1 = Belt_Int.fromString(value);
-                            tmp = {
-                              eyr: Caml_option.some(v$1 !== undefined && v$1 >= 2020 && v$1 <= 2030 ? v$1 : undefined)
-                            };
-                            break;
-                        case "hcl" :
-                            tmp = {
-                              hcl: Caml_option.some(/^\#[\d|a-f$]{6}/.test(value) ? value : undefined)
-                            };
-                            break;
-                        case "hgt" :
-                            var match$1 = value.slice(-2);
-                            var tmp$2;
-                            switch (match$1) {
-                              case "cm" :
-                                  var v$2 = Belt_Int.fromString(value.substring(0, value.indexOf("c") + 1 | 0));
-                                  tmp$2 = [
-                                    v$2 !== undefined && v$2 >= 150 && v$2 <= 193 ? v$2 : undefined,
-                                    /* Cm */0
-                                  ];
-                                  break;
-                              case "in" :
-                                  var v$3 = Belt_Int.fromString(value.substring(0, value.indexOf("i") + 1 | 0));
-                                  tmp$2 = [
-                                    v$3 !== undefined && v$3 >= 59 && v$3 <= 76 ? v$3 : undefined,
-                                    /* In */1
-                                  ];
-                                  break;
-                              default:
-                                tmp$2 = [
-                                  undefined,
-                                  undefined
+        return Js_dict.fromArray(Belt_Array.keepMap(Belt_Array.concatMany(Belt_Array.map(passport.split("\n"), (function (item) {
+                                  return item.split(" ");
+                                }))), (function (item) {
+                          var match = item.split(":");
+                          if (match.length !== 2) {
+                            return ;
+                          }
+                          var key = match[0];
+                          var value = match[1];
+                          return [
+                                  key,
+                                  value
                                 ];
-                            }
-                            tmp = {
-                              hgt: tmp$2
-                            };
-                            break;
-                        case "iyr" :
-                            var v$4 = Belt_Int.fromString(value);
-                            tmp = {
-                              iyr: Caml_option.some(v$4 !== undefined && v$4 >= 2010 && v$4 <= 2020 ? v$4 : undefined)
-                            };
-                            break;
-                        case "pid" :
-                            tmp = {
-                              pid: Caml_option.some(/[0-9]{9}/g.test(value) ? value : undefined)
-                            };
-                            break;
-                        default:
-                          tmp = Js_exn.raiseError("this is not valid key");
-                      }
-                      return tmp;
-                    }));
+                        })));
       }));
 
-console.log(inputList);
+var validInputList = Belt_Array.keepMap(inputList, (function (dict) {
+        var v = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "byr"), ""));
+        var match = v !== undefined ? v : undefined;
+        var v$1 = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "iyr"), ""));
+        var match$1 = v$1 !== undefined ? v$1 : undefined;
+        var v$2 = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "eyr"), ""));
+        var match$2 = v$2 !== undefined ? v$2 : undefined;
+        var v$3 = Js_dict.get(dict, "hgt");
+        var match$3 = v$3 !== undefined ? v$3 : undefined;
+        var v$4 = Js_dict.get(dict, "hcl");
+        var match$4 = v$4 !== undefined ? v$4 : undefined;
+        var v$5 = Js_dict.get(dict, "ecl");
+        var match$5 = v$5 !== undefined ? v$5 : undefined;
+        var v$6 = Js_dict.get(dict, "pid");
+        var match$6 = v$6 !== undefined ? v$6 : undefined;
+        var match$7 = Js_dict.get(dict, "cid");
+        if (match !== undefined && match$1 !== undefined && match$2 !== undefined && match$3 !== undefined && match$4 !== undefined && match$5 !== undefined && match$6 !== undefined) {
+          return {
+                  byr: match,
+                  iyr: match$1,
+                  eyr: match$2,
+                  hgt: match$3,
+                  hcl: match$4,
+                  ecl: match$5,
+                  pid: match$6,
+                  cid: match$7
+                };
+        }
+        
+      }));
+
+console.log(validInputList.length);
 
 exports.input = input;
 exports.inputList = inputList;
+exports.validInputList = validInputList;
 /* input Not a pure module */
