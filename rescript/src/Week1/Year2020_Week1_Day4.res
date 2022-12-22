@@ -42,7 +42,7 @@ let inputList =
     ->Js.Dict.fromArray
   })
 
-let validInputList = inputList->Belt.Array.keepMap(dict => {
+let validList: array<passportType> = inputList->Belt.Array.keepMap(dict => {
   switch (
     switch dict->Js.Dict.get("byr")->Belt.Option.getWithDefault("")->Belt.Int.fromString {
     | Some(v) => Some(v)
@@ -91,9 +91,110 @@ let validInputList = inputList->Belt.Array.keepMap(dict => {
 
 // part1
 
-validInputList->Belt.Array.length->Js.log
+validList->Belt.Array.length->Js.log
 
 // part2
+
+type strictPassportType = {
+  byr: int,
+  iyr: int,
+  eyr: int,
+  hgt: (int, heightUnitType),
+  hcl: string,
+  ecl: eyeColorType,
+  pid: string,
+  cid: option<string>,
+}
+
+let strictValidList = validList->Belt.Array.keepMap(passport => {
+  switch (
+    switch passport.byr >= 1920 && passport.byr <= 2002 {
+    | true => Some(passport.byr)
+    | false => None
+    },
+    switch passport.iyr >= 2010 && passport.iyr <= 2020 {
+    | true => Some(passport.iyr)
+    | false => None
+    },
+    switch passport.eyr >= 2020 && passport.eyr <= 2030 {
+    | true => Some(passport.eyr)
+    | false => None
+    },
+    switch passport.hgt->Js.String2.sliceToEnd(~from=-2) {
+    | "cm" => (
+        switch passport.hgt
+        ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("c") + 1)
+        ->Belt.Int.fromString {
+        | Some(v) =>
+          switch v >= 150 && v <= 193 {
+          | true => Some(v)
+          | false => None
+          }
+        | _ => None
+        },
+        Some(Cm),
+      )
+    | "in" => (
+        switch passport.hgt
+        ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("i") + 1)
+        ->Belt.Int.fromString {
+        | Some(v) =>
+          switch v >= 59 && v <= 76 {
+          | true => Some(v)
+          | false => None
+          }
+        | _ => None
+        },
+        Some(In),
+      )
+    | _ => (None, None)
+    },
+    switch Js.Re.test_(%re("/^\#[\d|a-f$]{6}/"), passport.hcl) {
+    | true => Some(passport.hcl)
+    | false => None
+    },
+    switch passport.ecl {
+    | "amb" => Some(Amb)
+    | "blu" => Some(Blu)
+    | "brn" => Some(Brn)
+    | "gry" => Some(Gry)
+    | "grn" => Some(Grn)
+    | "hzl" => Some(Hzl)
+    | "oth" => Some(Oth)
+    | _ => None
+    },
+    switch Js.Re.test_(%re("/[0-9]{9}/g"), passport.pid) {
+    | true => Some(passport.pid)
+    | false => None
+    },
+    passport.cid,
+  ) {
+  | (
+      Some(byr),
+      Some(iyr),
+      Some(eyr),
+      (Some(int), Some(heightUnitType)),
+      Some(hcl),
+      Some(ecl),
+      Some(pid),
+      cid,
+    ) =>
+    Some({
+      byr,
+      iyr,
+      eyr,
+      hgt: (int, heightUnitType),
+      hcl,
+      ecl,
+      pid,
+      cid,
+    })
+  | _ => None
+  }
+})
+strictValidList->Js.log
+
+strictValidList->Belt.Array.length->Js.log
 
 // inputList
 // ->Belt.Array.map(dict => {

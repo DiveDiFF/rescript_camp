@@ -26,7 +26,7 @@ var inputList = Belt_Array.map(input.split("\n\n"), (function (passport) {
                         })));
       }));
 
-var validInputList = Belt_Array.keepMap(inputList, (function (dict) {
+var validList = Belt_Array.keepMap(inputList, (function (dict) {
         var v = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "byr"), ""));
         var match = v !== undefined ? v : undefined;
         var v$1 = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "iyr"), ""));
@@ -57,9 +57,103 @@ var validInputList = Belt_Array.keepMap(inputList, (function (dict) {
         
       }));
 
-console.log(validInputList.length);
+console.log(validList.length);
+
+var strictValidList = Belt_Array.keepMap(validList, (function (passport) {
+        var match = passport.byr >= 1920 && passport.byr <= 2002 ? passport.byr : undefined;
+        var match$1 = passport.iyr >= 2010 && passport.iyr <= 2020 ? passport.iyr : undefined;
+        var match$2 = passport.eyr >= 2020 && passport.eyr <= 2030 ? passport.eyr : undefined;
+        var match$3 = passport.hgt.slice(-2);
+        var match$4;
+        switch (match$3) {
+          case "cm" :
+              var v = Belt_Int.fromString(passport.hgt.substring(0, passport.hgt.indexOf("c") + 1 | 0));
+              match$4 = [
+                v !== undefined && v >= 150 && v <= 193 ? v : undefined,
+                /* Cm */0
+              ];
+              break;
+          case "in" :
+              var v$1 = Belt_Int.fromString(passport.hgt.substring(0, passport.hgt.indexOf("i") + 1 | 0));
+              match$4 = [
+                v$1 !== undefined && v$1 >= 59 && v$1 <= 76 ? v$1 : undefined,
+                /* In */1
+              ];
+              break;
+          default:
+            match$4 = [
+              undefined,
+              undefined
+            ];
+        }
+        var match$5 = /^\#[\d|a-f$]{6}/.test(passport.hcl) ? passport.hcl : undefined;
+        var match$6 = passport.ecl;
+        var match$7;
+        switch (match$6) {
+          case "amb" :
+              match$7 = /* Amb */0;
+              break;
+          case "blu" :
+              match$7 = /* Blu */1;
+              break;
+          case "brn" :
+              match$7 = /* Brn */2;
+              break;
+          case "grn" :
+              match$7 = /* Grn */4;
+              break;
+          case "gry" :
+              match$7 = /* Gry */3;
+              break;
+          case "hzl" :
+              match$7 = /* Hzl */5;
+              break;
+          case "oth" :
+              match$7 = /* Oth */6;
+              break;
+          default:
+            match$7 = undefined;
+        }
+        var match$8 = /[0-9]{9}/g.test(passport.pid) ? passport.pid : undefined;
+        var match$9 = passport.cid;
+        if (match === undefined) {
+          return ;
+        }
+        if (match$1 === undefined) {
+          return ;
+        }
+        if (match$2 === undefined) {
+          return ;
+        }
+        var $$int = match$4[0];
+        if ($$int === undefined) {
+          return ;
+        }
+        var heightUnitType = match$4[1];
+        if (heightUnitType !== undefined && match$5 !== undefined && match$7 !== undefined && match$8 !== undefined) {
+          return {
+                  byr: match,
+                  iyr: match$1,
+                  eyr: match$2,
+                  hgt: [
+                    $$int,
+                    heightUnitType
+                  ],
+                  hcl: match$5,
+                  ecl: match$7,
+                  pid: match$8,
+                  cid: match$9
+                };
+        }
+        
+      }));
+
+console.log(strictValidList);
+
+console.log(strictValidList.length);
 
 exports.input = input;
 exports.inputList = inputList;
-exports.validInputList = validInputList;
+exports.validList = validList;
+exports.strictValidList = strictValidList;
 /* input Not a pure module */
