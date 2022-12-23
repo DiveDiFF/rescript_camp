@@ -114,7 +114,7 @@ var strictValidList = Belt_Array.keepMap(validList, (function (passport) {
           default:
             match$7 = undefined;
         }
-        var match$8 = /[0-9]{9}/g.test(passport.pid) ? passport.pid : undefined;
+        var match$8 = /^[0-9]{9}$/g.test(passport.pid) ? passport.pid : undefined;
         var match$9 = passport.cid;
         if (match === undefined) {
           return ;
@@ -147,8 +147,6 @@ var strictValidList = Belt_Array.keepMap(validList, (function (passport) {
         }
         
       }));
-
-console.log(strictValidList);
 
 console.log(strictValidList.length);
 

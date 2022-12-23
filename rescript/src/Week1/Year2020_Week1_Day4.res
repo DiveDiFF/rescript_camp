@@ -128,6 +128,7 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
         | Some(v) =>
           switch v >= 150 && v <= 193 {
           | true => Some(v)
+
           | false => None
           }
         | _ => None
@@ -151,6 +152,7 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
     },
     switch Js.Re.test_(%re("/^\#[\d|a-f$]{6}/"), passport.hcl) {
     | true => Some(passport.hcl)
+
     | false => None
     },
     switch passport.ecl {
@@ -163,8 +165,9 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
     | "oth" => Some(Oth)
     | _ => None
     },
-    switch Js.Re.test_(%re("/[0-9]{9}/g"), passport.pid) {
+    switch Js.Re.test_(%re("/^[0-9]{9}$/g"), passport.pid) {
     | true => Some(passport.pid)
+
     | false => None
     },
     passport.cid,
@@ -192,7 +195,7 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
   | _ => None
   }
 })
-strictValidList->Js.log
+// strictValidList->Js.log
 
 strictValidList->Belt.Array.length->Js.log
 
