@@ -56,66 +56,69 @@ var strictValidList = Belt_Array.keepMap(validList, (function (passport) {
         var match = passport.byr >= 1920 && passport.byr <= 2002 ? passport.byr : undefined;
         var match$1 = passport.iyr >= 2010 && passport.iyr <= 2020 ? passport.iyr : undefined;
         var match$2 = passport.eyr >= 2020 && passport.eyr <= 2030 ? passport.eyr : undefined;
-        var match$3 = passport.hgt.slice(-2);
-        var match$4;
-        switch (match$3) {
-          case "cm" :
-              var v = Belt_Int.fromString(passport.hgt.substring(0, passport.hgt.indexOf("c") + 1 | 0));
-              match$4 = v !== undefined && v >= 150 && v <= 193 ? ({
-                    TAG: /* Cm */0,
-                    _0: v
-                  }) : undefined;
-              break;
-          case "in" :
-              var v$1 = Belt_Int.fromString(passport.hgt.substring(0, passport.hgt.indexOf("i") + 1 | 0));
-              match$4 = v$1 !== undefined && v$1 >= 59 && v$1 <= 76 ? ({
-                    TAG: /* In */1,
-                    _0: v$1
-                  }) : undefined;
-              break;
-          default:
-            match$4 = undefined;
+        var match$3 = Belt_Int.fromString(passport.hgt.slice(0, -2));
+        var match$4 = passport.hgt.slice(-2);
+        var match$5;
+        if (match$3 !== undefined) {
+          switch (match$4) {
+            case "cm" :
+                match$5 = match$3 >= 150 && match$3 <= 193 ? ({
+                      TAG: /* Cm */0,
+                      _0: match$3
+                    }) : undefined;
+                break;
+            case "in" :
+                match$5 = match$3 >= 59 && match$3 <= 76 ? ({
+                      TAG: /* In */1,
+                      _0: match$3
+                    }) : undefined;
+                break;
+            default:
+              match$5 = undefined;
+          }
+        } else {
+          match$5 = undefined;
         }
-        var match$5 = /^\#[\d|a-f$]{6}/.test(passport.hcl) ? passport.hcl : undefined;
-        var match$6 = passport.ecl;
-        var match$7;
-        switch (match$6) {
+        var match$6 = /^\#[\d|a-f$]{6}/.test(passport.hcl) ? passport.hcl : undefined;
+        var match$7 = passport.ecl;
+        var match$8;
+        switch (match$7) {
           case "amb" :
-              match$7 = /* Amb */0;
+              match$8 = /* Amb */0;
               break;
           case "blu" :
-              match$7 = /* Blu */1;
+              match$8 = /* Blu */1;
               break;
           case "brn" :
-              match$7 = /* Brn */2;
+              match$8 = /* Brn */2;
               break;
           case "grn" :
-              match$7 = /* Grn */4;
+              match$8 = /* Grn */4;
               break;
           case "gry" :
-              match$7 = /* Gry */3;
+              match$8 = /* Gry */3;
               break;
           case "hzl" :
-              match$7 = /* Hzl */5;
+              match$8 = /* Hzl */5;
               break;
           case "oth" :
-              match$7 = /* Oth */6;
+              match$8 = /* Oth */6;
               break;
           default:
-            match$7 = undefined;
+            match$8 = undefined;
         }
-        var match$8 = /^[0-9]{9}$/g.test(passport.pid) ? passport.pid : undefined;
-        var match$9 = passport.cid;
-        if (match !== undefined && match$1 !== undefined && match$2 !== undefined && match$4 !== undefined && match$5 !== undefined && match$7 !== undefined && match$8 !== undefined) {
+        var match$9 = /^[0-9]{9}$/g.test(passport.pid) ? passport.pid : undefined;
+        var match$10 = passport.cid;
+        if (match !== undefined && match$1 !== undefined && match$2 !== undefined && match$5 !== undefined && match$6 !== undefined && match$8 !== undefined && match$9 !== undefined) {
           return {
                   byr: match,
                   iyr: match$1,
                   eyr: match$2,
-                  hgt: match$4,
-                  hcl: match$5,
-                  ecl: match$7,
-                  pid: match$8,
-                  cid: match$9
+                  hgt: match$5,
+                  hcl: match$6,
+                  ecl: match$8,
+                  pid: match$9,
+                  cid: match$10
                 };
         }
         

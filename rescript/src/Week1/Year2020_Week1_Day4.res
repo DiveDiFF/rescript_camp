@@ -101,29 +101,19 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
     | true => Some(passport.eyr)
     | false => None
     },
-    switch passport.hgt->Js.String2.sliceToEnd(~from=-2) {
-    | "cm" =>
-      switch passport.hgt
-      ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("c") + 1)
-      ->Belt.Int.fromString {
-      | Some(v) =>
-        switch v >= 150 && v <= 193 {
-        | true => Some(Cm(v))
-
-        | false => None
-        }
-      | _ => None
+    switch (
+      passport.hgt->Js.String2.slice(~from=0, ~to_=-2)->Belt.Int.fromString,
+      passport.hgt->Js.String2.sliceToEnd(~from=-2),
+    ) {
+    | (Some(height), "cm") =>
+      switch height >= 150 && height <= 193 {
+      | true => Some(Cm(height))
+      | false => None
       }
-    | "in" =>
-      switch passport.hgt
-      ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("i") + 1)
-      ->Belt.Int.fromString {
-      | Some(v) =>
-        switch v >= 59 && v <= 76 {
-        | true => Some(In(v))
-        | false => None
-        }
-      | _ => None
+    | (Some(height), "in") =>
+      switch height >= 59 && height <= 76 {
+      | true => Some(In(height))
+      | false => None
       }
     | _ => None
     },
