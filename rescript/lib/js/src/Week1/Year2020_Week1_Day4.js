@@ -27,20 +27,13 @@ var inputList = Belt_Array.map(input.split("\n\n"), (function (passport) {
       }));
 
 var validList = Belt_Array.keepMap(inputList, (function (dict) {
-        var v = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "byr"), ""));
-        var match = v !== undefined ? v : undefined;
-        var v$1 = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "iyr"), ""));
-        var match$1 = v$1 !== undefined ? v$1 : undefined;
-        var v$2 = Belt_Int.fromString(Belt_Option.getWithDefault(Js_dict.get(dict, "eyr"), ""));
-        var match$2 = v$2 !== undefined ? v$2 : undefined;
-        var v$3 = Js_dict.get(dict, "hgt");
-        var match$3 = v$3 !== undefined ? v$3 : undefined;
-        var v$4 = Js_dict.get(dict, "hcl");
-        var match$4 = v$4 !== undefined ? v$4 : undefined;
-        var v$5 = Js_dict.get(dict, "ecl");
-        var match$5 = v$5 !== undefined ? v$5 : undefined;
-        var v$6 = Js_dict.get(dict, "pid");
-        var match$6 = v$6 !== undefined ? v$6 : undefined;
+        var match = Belt_Option.flatMap(Js_dict.get(dict, "byr"), Belt_Int.fromString);
+        var match$1 = Belt_Option.flatMap(Js_dict.get(dict, "iyr"), Belt_Int.fromString);
+        var match$2 = Belt_Option.flatMap(Js_dict.get(dict, "eyr"), Belt_Int.fromString);
+        var match$3 = Js_dict.get(dict, "hgt");
+        var match$4 = Js_dict.get(dict, "hcl");
+        var match$5 = Js_dict.get(dict, "ecl");
+        var match$6 = Js_dict.get(dict, "pid");
         var match$7 = Js_dict.get(dict, "cid");
         if (match !== undefined && match$1 !== undefined && match$2 !== undefined && match$3 !== undefined && match$4 !== undefined && match$5 !== undefined && match$6 !== undefined) {
           return {
@@ -68,23 +61,20 @@ var strictValidList = Belt_Array.keepMap(validList, (function (passport) {
         switch (match$3) {
           case "cm" :
               var v = Belt_Int.fromString(passport.hgt.substring(0, passport.hgt.indexOf("c") + 1 | 0));
-              match$4 = [
-                v !== undefined && v >= 150 && v <= 193 ? v : undefined,
-                /* Cm */0
-              ];
+              match$4 = v !== undefined && v >= 150 && v <= 193 ? ({
+                    TAG: /* Cm */0,
+                    _0: v
+                  }) : undefined;
               break;
           case "in" :
               var v$1 = Belt_Int.fromString(passport.hgt.substring(0, passport.hgt.indexOf("i") + 1 | 0));
-              match$4 = [
-                v$1 !== undefined && v$1 >= 59 && v$1 <= 76 ? v$1 : undefined,
-                /* In */1
-              ];
+              match$4 = v$1 !== undefined && v$1 >= 59 && v$1 <= 76 ? ({
+                    TAG: /* In */1,
+                    _0: v$1
+                  }) : undefined;
               break;
           default:
-            match$4 = [
-              undefined,
-              undefined
-            ];
+            match$4 = undefined;
         }
         var match$5 = /^\#[\d|a-f$]{6}/.test(passport.hcl) ? passport.hcl : undefined;
         var match$6 = passport.ecl;
@@ -116,29 +106,12 @@ var strictValidList = Belt_Array.keepMap(validList, (function (passport) {
         }
         var match$8 = /^[0-9]{9}$/g.test(passport.pid) ? passport.pid : undefined;
         var match$9 = passport.cid;
-        if (match === undefined) {
-          return ;
-        }
-        if (match$1 === undefined) {
-          return ;
-        }
-        if (match$2 === undefined) {
-          return ;
-        }
-        var $$int = match$4[0];
-        if ($$int === undefined) {
-          return ;
-        }
-        var heightUnitType = match$4[1];
-        if (heightUnitType !== undefined && match$5 !== undefined && match$7 !== undefined && match$8 !== undefined) {
+        if (match !== undefined && match$1 !== undefined && match$2 !== undefined && match$4 !== undefined && match$5 !== undefined && match$7 !== undefined && match$8 !== undefined) {
           return {
                   byr: match,
                   iyr: match$1,
                   eyr: match$2,
-                  hgt: [
-                    $$int,
-                    heightUnitType
-                  ],
+                  hgt: match$4,
                   hcl: match$5,
                   ecl: match$7,
                   pid: match$8,

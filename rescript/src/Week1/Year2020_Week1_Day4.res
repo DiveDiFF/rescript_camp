@@ -1,7 +1,7 @@
 let input = Node.Fs.readFileAsUtf8Sync("input/Week1/Year2020Day4.sample.txt")
 
 type passportKeyType = Byr | Iyr | Eyr | Hgt | Hcl | Ecl | Pid | Cid
-type heightUnitType = Cm | In
+
 type eyeColorType = Amb | Blu | Brn | Gry | Grn | Hzl | Oth
 // type passportType = {
 //   byr?: option<int>,
@@ -44,34 +44,13 @@ let inputList =
 
 let validList: array<passportType> = inputList->Belt.Array.keepMap(dict => {
   switch (
-    switch dict->Js.Dict.get("byr")->Belt.Option.getWithDefault("")->Belt.Int.fromString {
-    | Some(v) => Some(v)
-    | _ => None
-    },
-    switch dict->Js.Dict.get("iyr")->Belt.Option.getWithDefault("")->Belt.Int.fromString {
-    | Some(v) => Some(v)
-    | _ => None
-    },
-    switch dict->Js.Dict.get("eyr")->Belt.Option.getWithDefault("")->Belt.Int.fromString {
-    | Some(v) => Some(v)
-    | _ => None
-    },
-    switch dict->Js.Dict.get("hgt") {
-    | Some(v) => Some(v)
-    | _ => None
-    },
-    switch dict->Js.Dict.get("hcl") {
-    | Some(v) => Some(v)
-    | _ => None
-    },
-    switch dict->Js.Dict.get("ecl") {
-    | Some(v) => Some(v)
-    | _ => None
-    },
-    switch dict->Js.Dict.get("pid") {
-    | Some(v) => Some(v)
-    | _ => None
-    },
+    dict->Js.Dict.get("byr")->Belt.Option.flatMap(Belt.Int.fromString),
+    dict->Js.Dict.get("iyr")->Belt.Option.flatMap(Belt.Int.fromString),
+    dict->Js.Dict.get("eyr")->Belt.Option.flatMap(Belt.Int.fromString),
+    dict->Js.Dict.get("hgt"),
+    dict->Js.Dict.get("hcl"),
+    dict->Js.Dict.get("ecl"),
+    dict->Js.Dict.get("pid"),
     dict->Js.Dict.get("cid"),
   ) {
   | (Some(byr), Some(iyr), Some(eyr), Some(hgt), Some(hcl), Some(ecl), Some(pid), cid) =>
@@ -95,11 +74,13 @@ validList->Belt.Array.length->Js.log
 
 // part2
 
+type heightUnitType = Cm(int) | In(int)
+
 type strictPassportType = {
   byr: int,
   iyr: int,
   eyr: int,
-  hgt: (int, heightUnitType),
+  hgt: heightUnitType,
   hcl: string,
   ecl: eyeColorType,
   pid: string,
@@ -121,38 +102,33 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
     | false => None
     },
     switch passport.hgt->Js.String2.sliceToEnd(~from=-2) {
-    | "cm" => (
-        switch passport.hgt
-        ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("c") + 1)
-        ->Belt.Int.fromString {
-        | Some(v) =>
-          switch v >= 150 && v <= 193 {
-          | true => Some(v)
+    | "cm" =>
+      switch passport.hgt
+      ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("c") + 1)
+      ->Belt.Int.fromString {
+      | Some(v) =>
+        switch v >= 150 && v <= 193 {
+        | true => Some(Cm(v))
 
-          | false => None
-          }
-        | _ => None
-        },
-        Some(Cm),
-      )
-    | "in" => (
-        switch passport.hgt
-        ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("i") + 1)
-        ->Belt.Int.fromString {
-        | Some(v) =>
-          switch v >= 59 && v <= 76 {
-          | true => Some(v)
-          | false => None
-          }
-        | _ => None
-        },
-        Some(In),
-      )
-    | _ => (None, None)
+        | false => None
+        }
+      | _ => None
+      }
+    | "in" =>
+      switch passport.hgt
+      ->Js.String2.substring(~from=0, ~to_=passport.hgt->Js.String2.indexOf("i") + 1)
+      ->Belt.Int.fromString {
+      | Some(v) =>
+        switch v >= 59 && v <= 76 {
+        | true => Some(In(v))
+        | false => None
+        }
+      | _ => None
+      }
+    | _ => None
     },
     switch Js.Re.test_(%re("/^\#[\d|a-f$]{6}/"), passport.hcl) {
     | true => Some(passport.hcl)
-
     | false => None
     },
     switch passport.ecl {
@@ -167,26 +143,16 @@ let strictValidList = validList->Belt.Array.keepMap(passport => {
     },
     switch Js.Re.test_(%re("/^[0-9]{9}$/g"), passport.pid) {
     | true => Some(passport.pid)
-
     | false => None
     },
     passport.cid,
   ) {
-  | (
-      Some(byr),
-      Some(iyr),
-      Some(eyr),
-      (Some(int), Some(heightUnitType)),
-      Some(hcl),
-      Some(ecl),
-      Some(pid),
-      cid,
-    ) =>
+  | (Some(byr), Some(iyr), Some(eyr), Some(hgt), Some(hcl), Some(ecl), Some(pid), cid) =>
     Some({
       byr,
       iyr,
       eyr,
-      hgt: (int, heightUnitType),
+      hgt,
       hcl,
       ecl,
       pid,
